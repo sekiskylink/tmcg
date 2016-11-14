@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% block title %}tmcg.::.SMSLogs{% endblock%}
+{% from 'layout.html' import navbar2, myscripts, err %}
+{% block stylesheets %}
+<link href="/static/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="/static/js/Buttons-1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+    {% call navbar2() %}
+       {% if ses.loggedin %}
+        <li><a href="/smslogs" class="active">SMS Logs</a></li>
+        <li><a href="/reports">Reports</a></li>
+        <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Control Panel <b class="caret"></b></a>
+           <ul class="dropdown-menu">
+             <li><a href="/smslogs" class="active">SMS Logs</a></li>
+             <li><a href="/reports">Reports</a></li>
+             <li class="divider"></li>
+             <li class="nav-header">Admin Panel</li>
+             <li><a href="/users">Users</a></li>
+             <li><a href="/settings">Settings</a></li>
+           </ul>
+       </li>
+       {% endif %}
+    {% endcall %}
+{% endblock %}
+
+{%block content %}
+    {{ err(err_msg) }}
+    {#
+    <form name="p" method="post" action="">
+        <fieldset>
+        <legend>Add/Edit Activity</legend>
+        <table>
+            <tr><td>Name:</td><td><input name="name" value="{{ name }}" type="text" class=""/></td></tr>
+            <tr><td>Description:</td><td><textarea name="descr" type="text" class="">{{ descr }}</textarea></td></tr>
+            <tr><td></td><td><input name="submit" value="Save" type="submit" class="btn" /></td></tr>
+        </table>
+    </form>
+    #}
+    <div id="graph">
+    </div>
+    <br/>
+    <h4>Monthly SMS Stats</h4>
+    {#
+    <table class="table table-condensed" style="padding-bottom: 0px; margin-bottom:0px; border-bottom:none;
+        background-color:#333333;color:ffffff;">
+            <tr><th style="color:#fff">Monthly SMS Stats</th><th></th></tr>
+    </table>
+    #}
+    <table id="resTable" class="table table-condensed  table-striped table-bordered tablesorter">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>MONTH</th>
+            <th>MTN IN</th>
+            <th>MTN OUT</th>
+            <th>AIRTEL IN</th>
+            <th>AIRTEL OUT</th>
+            <th>AFRICEL IN</th>
+            <th>AFRICEL OUT</th>
+            <th>UTL IN</th>
+            <th>UTL OUT</th>
+            <th>TOTAL IN</th>
+            <th>TOTAL OUT</th>
+            <th>Action</th></tr>
+        </thead>
+        <tbody>
+        {% for l in res %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ l.month }}</td>
+                <td>{{ l.mtn_in}}</td>
+                <td>{{ l.mtn_out }}</td>
+                <td>{{ l.airtel_in }}</td>
+                <td>{{ l.airtel_out }}</td>
+                <td>{{ l.africel_in }}</td>
+                <td>{{ l.africel_out }}</td>
+                <td>{{ l.utl_in }}</td>
+                <td>{{ l.utl_out }}</td>
+                <td>{{ l.total_in }}</td>
+                <td>{{ l.total_out }}</td>
+                <td>
+                    <a href="/refresh" class="regenerate" value={{ l.month }}><i class="icon-refresh"></i></a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/smslogs?d_id={{ l.id }}&page={{ page }}" class="gwe" value={{ l.id }}><i class="icon-signal"></i></a>
+                </td>
+            </tr>
+        {% endfor%}
+        </tbody>
+    </table>
+    {{ pagination_str }}
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+    <script type="text/javascript" src="/static/js/highcharts.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/static/js/Buttons-1.1.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/static/js/Buttons-1.1.2/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="/static/js/jszip.min.js"></script>
+    <script type="text/javascript" src="/static/js/pdfmake.min.js"></script>
+    <script type="text/javascript" src="/static/js/vfs_fonts.js"></script>
+    <script type="text/javascript" src="/static/js/Buttons-1.1.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="/static/js/Buttons-1.1.2/js/buttons.print.min.js"></script>
+    <script src="/static/js/smslogs.js"></script>
+    <script>
+        $(document).ready(function() {
+            // $("#resTable").tablesorter();
+            $("#resTable").DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+        });
+    </script>
+    {% endcall %}
+{% endblock %}
